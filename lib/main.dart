@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:food_log/src/providers/token_provider.dart';
 import 'package:food_log/src/register.dart';
 import 'package:go_router/go_router.dart';
 import 'package:food_log/src/home.dart';
 import 'package:food_log/src/login.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(MultiProvider(
+      providers: [ChangeNotifierProvider(create: (context) => UserProvider())],
+      child: const MainApp()));
 }
 
 final GoRouter _router = GoRouter(

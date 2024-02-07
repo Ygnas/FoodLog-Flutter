@@ -1,22 +1,23 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:food_log/config.dart';
+import 'package:food_log/src/providers/user_provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
+
+    final formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(),
       body: Form(
+        key: formKey,
           child: SingleChildScrollView(
         child: Column(
           children: [
@@ -38,6 +39,12 @@ class Login extends StatelessWidget {
                         child: Column(
                           children: [
                             TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter an email';
+                                }
+                                return null;
+                              },
                               controller: emailController,
                               decoration: const InputDecoration(
                                 prefixIcon: Icon(Icons.email_outlined),
@@ -47,6 +54,12 @@ class Login extends StatelessWidget {
                             ),
                             const Padding(padding: EdgeInsets.all(8.0)),
                             TextFormField(
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a password';
+                                }
+                                return null;
+                              },
                               controller: passwordController,
                               obscureText: true,
                               decoration: const InputDecoration(
@@ -60,9 +73,16 @@ class Login extends StatelessWidget {
                               onPressed: () async {
                                 final email = emailController.text;
                                 final password = passwordController.text;
-                                login(email, password).then((response) {
+                                if (!formKey.currentState!.validate()) {
+                                  return;
+                                }
+                                userProvider
+                                    .login(email, password)
+                                    .then((response) {
                                   if (response.statusCode == 200) {
-                                    saveToken(response.body);
+                                    context
+                                        .read<UserProvider>()
+                                        .saveToken(response.body);
                                     context.go("/");
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -97,15 +117,4 @@ class Login extends StatelessWidget {
       )),
     );
   }
-}
-
-Future<http.Response> login(String email, String password) async {
-  var url = Uri.http(AppConfig.ipAddress, '/users/login');
-  var body = json.encode({'email': email, 'password': password});
-  return await http.post(url, body: body);
-}
-
-Future<void> saveToken(String token) async {
-  const storage = FlutterSecureStorage();
-  await storage.write(key: "jwtToken", value: token);
 }
