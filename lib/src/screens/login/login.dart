@@ -82,12 +82,12 @@ class LoginScreen extends StatelessWidget {
                                     userProvider
                                         .login(email, password)
                                         .then((response) {
-                                          response.statusCode == 200
-                                              ? context.go("/")
-                                              : ScaffoldMessenger.of(context)
-                                                  .showSnackBar(const SnackBar(
-                                                      content: Text(
-                                                          'Invalid email or password')));
+                                      response.statusCode == 200
+                                          ? context.go("/")
+                                          : ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'Invalid email or password')));
                                     });
                                   },
                                   child: const Text('Login'),

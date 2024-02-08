@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:food_log/config.dart";
 import "package:food_log/src/models/user.dart";
+import "package:food_log/src/providers/listing_provider.dart";
 import 'package:http/http.dart' as http;
 
 class UserProvider extends ChangeNotifier {
@@ -35,6 +36,7 @@ class UserProvider extends ChangeNotifier {
     const storage = FlutterSecureStorage();
     user = User();
     await storage.delete(key: "jwtToken");
+    await deleteToken();
     notifyListeners();
   }
 
