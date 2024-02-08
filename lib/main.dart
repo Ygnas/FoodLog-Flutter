@@ -17,19 +17,19 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (BuildContext context, GoRouterState state) {
-        return const HomePage();
+        return const HomeScreen();
       },
       routes: <RouteBase>[
         GoRoute(
           path: 'login',
           builder: (BuildContext context, GoRouterState state) {
-            return const Login();
+            return const LoginScreen();
           },
         ),
         GoRoute(
           path: 'register',
           builder: (BuildContext context, GoRouterState state) {
-            return const Register();
+            return const RegisterScreen();
           },
         ),
       ],

@@ -3,8 +3,8 @@ import 'package:food_log/src/providers/user_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class Register extends StatelessWidget {
-  const Register({super.key});
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
