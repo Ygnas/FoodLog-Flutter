@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_log/src/providers/user_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,11 +18,21 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Food Log'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle_rounded),
+            onPressed: () {
+              userProvider.user.token.isEmpty
+                  ? context.go('/login')
+                  : userProvider.logout();
+            },
+          )
+        ],
       ),
       body: userProvider.user.token == ""
           ? const Center(child: CircularProgressIndicator())
-          : const Center(
-              child: Text('Welcome to Food Log'),
+          : Center(
+              child: Text('Welcome to Food Log\n ${userProvider.user.token}'),
             ),
     );
   }
