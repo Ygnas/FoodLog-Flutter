@@ -21,35 +21,35 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> deleteToken() async {
-  //   user.token = "";
-  //   notifyListeners();
-  // }
-
   Future<http.Response> login(String email, String password) async {
-    var url = Uri.http(AppConfig.ipAddress, '/users/login');
-    var body = json.encode({'email': email, 'password': password});
-    return await http.post(url, body: body);
+    final url = Uri.http(AppConfig.ipAddress, '/users/login');
+    final body = json.encode({'email': email, 'password': password});
+    final response = await http.post(url, body: body);
+    if (response.statusCode == 200) {
+      await saveToken(response.body);
+    }
+    return response;
   }
 
   Future<void> logout() async {
     const storage = FlutterSecureStorage();
     user = User();
     await storage.delete(key: "jwtToken");
+    notifyListeners();
   }
 
   Future<void> saveToken(String token) async {
     const storage = FlutterSecureStorage();
     user.token = token;
-    notifyListeners();
     await storage.write(key: "jwtToken", value: token);
+    notifyListeners();
   }
 
   Future<http.Response> register(String username, String email, String password,
       String repeatPassword) async {
-    var url = Uri.http(AppConfig.ipAddress, '/users/register');
+    final url = Uri.http(AppConfig.ipAddress, '/users/register');
 
-    var body =
+    final body =
         json.encode({'name': username, 'email': email, 'password': password});
     return await http.post(url, body: body);
   }
