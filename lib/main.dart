@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:food_log/src/providers/token_provider.dart';
-import 'package:food_log/src/register.dart';
+import 'package:food_log/src/providers/user_provider.dart';
+import 'package:food_log/src/screens/register/register.dart';
 import 'package:go_router/go_router.dart';
-import 'package:food_log/src/home.dart';
-import 'package:food_log/src/login.dart';
+import 'package:food_log/src/screens/home/home.dart';
+import 'package:food_log/src/screens/login/login.dart';
 import 'package:provider/provider.dart';
 
 void main() {
