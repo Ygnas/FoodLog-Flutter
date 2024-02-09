@@ -18,14 +18,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
+    final listingProvider = context.read<ListingProvider>();
 
     Future<void> refreshListings() async {
       setState(() {
-        listings = getListing();
+        listings = listingProvider.loadListings();
       });
     }
 
-    listings ??= getListing();
+    listings ??= listingProvider.loadListings();
 
     return Scaffold(
         appBar: AppBar(
@@ -52,9 +53,67 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ListView.builder(
                           itemCount: snapshot.data?.length,
                           itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(snapshot.data![index].title),
-                              subtitle: Text(snapshot.data![index].description),
+                            return Dismissible(
+                              key: Key(snapshot.data![index].id),
+                              confirmDismiss: (direction) async {
+                                // context.push('/login');
+                                return false;
+                              },
+                              background: Container(
+                                color: Colors.green,
+                                padding: const EdgeInsets.only(left: 16.0),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Icon(Icons.edit, color: Colors.white),
+                                  ],
+                                ),
+                              ),
+                              secondaryBackground: Container(
+                                color: Colors.red,
+                                padding: const EdgeInsets.only(right: 16.0),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Icon(Icons.delete, color: Colors.white),
+                                  ],
+                                ),
+                              ),
+                              child: GestureDetector(
+                                onTap: () => context.push(
+                                    '/listings/${snapshot.data![index].id}'),
+                                child: Card(
+                                  elevation: 0,
+                                  child: Column(
+                                    children: [
+                                      ListTile(
+                                        contentPadding: const EdgeInsets
+                                            .symmetric(
+                                            horizontal: 16.0,
+                                            vertical:
+                                                8.0), // Adjust padding as needed
+                                        leading: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                              8.0), // Adjust the border radius as needed
+                                          child: FadeInImage(
+                                            placeholder: const AssetImage(
+                                                "assets/food.png"),
+                                            image: NetworkImage(
+                                                snapshot.data![index].image),
+                                            fit: BoxFit.cover,
+                                            width: 80.0,
+                                            height: double.infinity,
+                                          ),
+                                        ),
+                                        title:
+                                            Text(snapshot.data![index].title),
+                                        subtitle: Text(
+                                            snapshot.data![index].description),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             );
                           }),
                     );
