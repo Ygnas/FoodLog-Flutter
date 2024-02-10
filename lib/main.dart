@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:food_log/src/providers/user_provider.dart';
 import 'package:food_log/src/screens/home/home.dart';
@@ -36,9 +37,9 @@ final GoRouter _router = GoRouter(
           },
         ),
         GoRoute(
-          path: 'listings/:listingId',
+          path: 'listings',
           builder: (BuildContext context, GoRouterState state) {
-            return ListingScreen(listingId: state.pathParameters['listingId']!);
+            return ListingScreen(listing: state.extra as Listing);
           },
         ),
       ],
