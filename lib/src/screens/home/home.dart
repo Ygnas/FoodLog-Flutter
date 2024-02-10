@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               child: GestureDetector(
                                 onTap: () => context.push(
-                                    '/listings/${snapshot.data![index].id}'),
+                                    '/listings', extra: snapshot.data![index]),
                                 child: Card(
                                   elevation: 0,
                                   child: Column(
