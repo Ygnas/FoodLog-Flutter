@@ -80,21 +80,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               child: GestureDetector(
-                                onTap: () => context.push(
-                                    '/listings', extra: snapshot.data![index]),
+                                onTap: () => context.push('/listings',
+                                    extra: snapshot.data![index]),
                                 child: Card(
                                   elevation: 0,
                                   child: Column(
                                     children: [
                                       ListTile(
-                                        contentPadding: const EdgeInsets
-                                            .symmetric(
-                                            horizontal: 16.0,
-                                            vertical:
-                                                8.0), // Adjust padding as needed
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 16.0,
+                                                vertical: 8.0),
                                         leading: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                              8.0), // Adjust the border radius as needed
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
                                           child: FadeInImage(
                                             placeholder: const AssetImage(
                                                 "assets/food.png"),
