@@ -2,6 +2,26 @@ import 'package:flutter/material.dart';
 
 enum ListingType { dinner, snack, breakfast, lunch }
 
+class Comment {
+  String comment;
+  DateTime createdAt;
+  String email;
+
+  Comment({
+    required this.comment,
+    required this.createdAt,
+    required this.email,
+  });
+
+  factory Comment.fromJson(Map<String, dynamic> json) {
+    return Comment(
+      comment: json['comment'],
+      createdAt: DateTime.parse(json['created_at']),
+      email: json['email'],
+    );
+  }
+}
+
 class Listing extends ChangeNotifier {
   String id;
   String title;
@@ -9,6 +29,8 @@ class Listing extends ChangeNotifier {
   String image;
   bool shared;
   ListingType type;
+  List<String> likes;
+  List<Comment> comments;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -19,6 +41,8 @@ class Listing extends ChangeNotifier {
       this.id = "",
       this.shared = false,
       this.type = ListingType.dinner,
+      this.likes = const [],
+      this.comments = const [],
       this.createdAt,
       this.updatedAt});
 
@@ -30,6 +54,8 @@ class Listing extends ChangeNotifier {
       id: json['id'],
       shared: json['shared'],
       type: _stringToType(json['type']),
+      likes: _parseLikes(json['likes']),
+      comments: _parseComments(json['comments']),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
@@ -48,5 +74,19 @@ class Listing extends ChangeNotifier {
       default:
         return ListingType.dinner;
     }
+  }
+
+  static List<String> _parseLikes(List<dynamic> likesJson) {
+    List<String> likes = [];
+    for (var like in likesJson) {
+      likes.add(like['email']);
+    }
+    return likes;
+  }
+
+  static List<Comment> _parseComments(List<dynamic> commentsJson) {
+    return commentsJson
+        .map<Comment>((commentJson) => Comment.fromJson(commentJson))
+        .toList();
   }
 }
