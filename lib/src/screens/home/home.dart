@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
@@ -66,7 +64,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return Dismissible(
                                   key: Key(snapshot.data![index].id),
                                   confirmDismiss: (direction) async {
-                                    // context.push('/login');
+                                    if (direction ==
+                                        DismissDirection.endToStart) {
+                                      await deleteListing(
+                                          snapshot.data![index].id);
+                                      listings!.then(
+                                          (value) => value.removeAt(index));
+                                      return true;
+                                    } else if (direction ==
+                                        DismissDirection.startToEnd) {
+                                      return false;
+                                    }
                                     return false;
                                   },
                                   background: Container(
