@@ -23,9 +23,18 @@ class ListingScreen extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
                 child: InteractiveViewer(
-                  child: FadeInImage(
-                      placeholder: const AssetImage("assets/food.png"),
-                      image: NetworkImage(listing.image)),
+                  child: listing.image.isNotEmpty
+                      ? FadeInImage(
+                          placeholder: const AssetImage("assets/food.png"),
+                          image: NetworkImage(listing.image),
+                        )
+                      : const SizedBox(
+                          width: 120,
+                          child: Icon(
+                            Icons.image,
+                            size: 120.0,
+                          ),
+                        ),
                 ),
               ),
             ),

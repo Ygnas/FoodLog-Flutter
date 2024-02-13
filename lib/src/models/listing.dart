@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum ListingType { dinner, snack, breakfast, lunch }
+enum ListingType { breakfast, lunch, dinner, snack }
 
 class Comment {
   String comment;
@@ -54,11 +54,27 @@ class Listing extends ChangeNotifier {
       id: json['id'],
       shared: json['shared'],
       type: _stringToType(json['type']),
-      likes: _parseLikes(json['likes']),
-      comments: _parseComments(json['comments']),
+      likes: json['likes'] != null ? _parseLikes(json['likes']) : [],
+      comments:
+          json['comments'] != null ? _parseComments(json['comments']) : [],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'description': description,
+      'image': image,
+      // 'id': id,
+      'shared': shared,
+      'type': _typeToString(type),
+      'likes': likes,
+      'comments': comments,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
   }
 
   static ListingType _stringToType(String type) {
@@ -73,6 +89,21 @@ class Listing extends ChangeNotifier {
         return ListingType.lunch;
       default:
         return ListingType.dinner;
+    }
+  }
+
+  static String _typeToString(ListingType type) {
+    switch (type) {
+      case ListingType.dinner:
+        return "dinner";
+      case ListingType.snack:
+        return "snack";
+      case ListingType.breakfast:
+        return "breakfast";
+      case ListingType.lunch:
+        return "lunch";
+      default:
+        return "dinner";
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:food_log/src/providers/user_provider.dart';
 import 'package:food_log/src/screens/home/home.dart';
+import 'package:food_log/src/screens/listings/add_listing.dart';
 import 'package:food_log/src/screens/listings/listings.dart';
 import 'package:food_log/src/screens/login/login.dart';
 import 'package:food_log/src/screens/register/register.dart';
@@ -21,7 +22,8 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (BuildContext context, GoRouterState state) {
-        return const HomeScreen();
+        return HomeScreen(
+            refreshListings: state.extra != null ? state.extra as bool : false);
       },
       routes: <RouteBase>[
         GoRoute(
@@ -40,6 +42,12 @@ final GoRouter _router = GoRouter(
           path: 'listings',
           builder: (BuildContext context, GoRouterState state) {
             return ListingScreen(listing: state.extra as Listing);
+          },
+        ),
+        GoRoute(
+          path: 'addlisting',
+          builder: (BuildContext context, GoRouterState state) {
+            return const AddListingScreen();
           },
         ),
       ],
