@@ -53,3 +53,19 @@ Future<List<Listing>> getListing() async {
   }
   return listings;
 }
+
+Future<http.Response> addListing(Listing listing) async {
+  await fetchToken();
+  if (_token.isEmpty) {
+    return http.Response("Unauthorized", 401);
+  }
+  final url = Uri.http(AppConfig.ipAddress, "/listings");
+  final response = await http.post(
+    url,
+    headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $_token',
+    },
+    body: json.encode(listing.toJson()),
+  );
+  return response;
+}
