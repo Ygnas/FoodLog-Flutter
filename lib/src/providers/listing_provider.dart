@@ -84,3 +84,19 @@ Future<http.Response> deleteListing(String id) async {
   );
   return response;
 }
+
+Future<http.Response> updateListing(Listing listing) async {
+  await fetchToken();
+  if (_token.isEmpty) {
+    return http.Response("Unauthorized", 401);
+  }
+  final url = Uri.http(AppConfig.ipAddress, "/listings/${listing.id}");
+  final response = await http.put(
+    url,
+    headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $_token',
+    },
+    body: json.encode(listing.toJson()),
+  );
+  return response;
+}
