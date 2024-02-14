@@ -20,6 +20,14 @@ class Comment {
       email: json['email'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'comment': comment,
+      'created_at': createdAt.toIso8601String(),
+      'email': email,
+    };
+  }
 }
 
 class Listing extends ChangeNotifier {
@@ -70,8 +78,8 @@ class Listing extends ChangeNotifier {
       'id': id,
       'shared': shared,
       'type': _typeToString(type),
-      'likes': likes,
-      'comments': comments,
+      'likes': _likesToJson(),
+      'comments': _commentsToJson(),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -119,5 +127,13 @@ class Listing extends ChangeNotifier {
     return commentsJson
         .map<Comment>((commentJson) => Comment.fromJson(commentJson))
         .toList();
+  }
+
+  List<Map<String, dynamic>> _likesToJson() {
+    return likes.map((like) => {'email': like}).toList();
+  }
+
+  List<Map<String, dynamic>> _commentsToJson() {
+    return comments.map((comment) => comment.toJson()).toList();
   }
 }
