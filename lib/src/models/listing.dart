@@ -23,7 +23,7 @@ class Comment {
 }
 
 class Listing extends ChangeNotifier {
-  String id;
+  String? id;
   String title;
   String description;
   String image;
@@ -38,7 +38,7 @@ class Listing extends ChangeNotifier {
       {this.title = "",
       this.description = "",
       this.image = "",
-      this.id = "",
+      this.id,
       this.shared = false,
       this.type = ListingType.dinner,
       this.likes = const [],
@@ -67,13 +67,13 @@ class Listing extends ChangeNotifier {
       'title': title,
       'description': description,
       'image': image,
-      // 'id': id,
+      'id': id,
       'shared': shared,
       'type': _typeToString(type),
       'likes': likes,
       'comments': comments,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
     };
   }
 

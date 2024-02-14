@@ -3,14 +3,15 @@ import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:go_router/go_router.dart';
 
-class AddListingScreen extends StatefulWidget {
-  const AddListingScreen({super.key});
+class UpdateListingScreen extends StatefulWidget {
+  final Listing listing;
+  const UpdateListingScreen({super.key, required this.listing});
 
   @override
-  State<AddListingScreen> createState() => _AddListingScreenState();
+  State<UpdateListingScreen> createState() => _UpdateListingScreenState();
 }
 
-class _AddListingScreenState extends State<AddListingScreen> {
+class _UpdateListingScreenState extends State<UpdateListingScreen> {
   bool checkedValue = false;
   ListingType selectedType = ListingType.breakfast;
 
@@ -19,7 +20,18 @@ class _AddListingScreenState extends State<AddListingScreen> {
   final formKey = GlobalKey<FormState>();
 
   @override
+  void initState() {
+    super.initState();
+    selectedType = widget.listing.type;
+    checkedValue = widget.listing.shared;
+    titleController.text = widget.listing.title;
+    descriptionController.text = widget.listing.description;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final listing = widget.listing;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Listing'),
@@ -94,25 +106,21 @@ class _AddListingScreenState extends State<AddListingScreen> {
               ElevatedButton(
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
-                    final listing = Listing(
-                      title: titleController.text,
-                      description: descriptionController.text,
-                      shared: checkedValue,
-                      type: selectedType,
-                      comments: [],
-                      likes: [],
-                    );
-                    final response = await addListing(listing);
+                    listing.title = titleController.text;
+                    listing.description = descriptionController.text;
+                    listing.shared = checkedValue;
+                    listing.type = selectedType;
+                    final response = await updateListing(listing);
                     if (response.statusCode == 200) {
                       if (context.mounted) {
-                        // context.pushReplacement('/');
-                        GoRouter.of(context).go('/', extra: true);
+                        context.go('/', extra: listing);
+                        // GoRouter.of(context).go('/', extra: true);
                       }
                     } else {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Failed to add listing'),
+                            content: Text('Failed to update listing'),
                           ),
                         );
                       }
@@ -120,7 +128,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
                     // Navigator.pop(context);
                   }
                 },
-                child: const Text('Add Listing'),
+                child: const Text('Update Listing'),
               ),
             ],
           ),
