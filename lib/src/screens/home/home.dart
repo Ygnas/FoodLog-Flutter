@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               userProvider.user.token.isEmpty
                   ? context.push('/login')
-                  : userProvider.logout();
+                  : context.push('/profile');
               listings = null;
             },
           )
