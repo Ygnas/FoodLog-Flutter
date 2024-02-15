@@ -7,6 +7,7 @@ import 'package:food_log/src/screens/listings/add_listing.dart';
 import 'package:food_log/src/screens/listings/listings.dart';
 import 'package:food_log/src/screens/listings/update_listing.dart';
 import 'package:food_log/src/screens/login/login.dart';
+import 'package:food_log/src/screens/profile/profile.dart';
 import 'package:food_log/src/screens/register/register.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -54,6 +55,12 @@ final GoRouter _router = GoRouter(
           path: 'updatelisting',
           builder: (BuildContext context, GoRouterState state) {
             return UpdateListingScreen(listing: state.extra as Listing);
+          },
+        ),
+        GoRoute(
+          path: 'profile',
+          builder: (BuildContext context, GoRouterState state) {
+            return const ProfileScreen();
           },
         ),
       ],
