@@ -17,8 +17,12 @@ class UserProvider extends ChangeNotifier {
   Future<void> loadToken() async {
     const storage = FlutterSecureStorage();
     final storedToken = await storage.read(key: 'jwtToken');
+    final storedName = await storage.read(key: 'name');
+    final storedEmail = await storage.read(key: 'email');
 
     user.token = storedToken ?? "";
+    user.name = storedName ?? "";
+    user.email = storedEmail ?? "";
     notifyListeners();
   }
 
@@ -42,7 +46,14 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> saveToken(String token) async {
     const storage = FlutterSecureStorage();
+
     user.token = token;
+    final userClaims = getClaims();
+    user.name = userClaims['name'];
+    user.email = userClaims['email'];
+
+    await storage.write(key: "name", value: user.name);
+    await storage.write(key: "email", value: user.email);
     await storage.write(key: "jwtToken", value: token);
     notifyListeners();
   }
@@ -64,5 +75,17 @@ class UserProvider extends ChangeNotifier {
     return RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(email);
+  }
+
+  Map<String, dynamic> getClaims() {
+    final parts = user.token.split('.');
+    if (parts.length != 3) {
+      throw Exception('invalid token');
+    }
+    final payload = parts[1];
+    final String normalized = base64Url.normalize(payload);
+    final String resp = utf8.decode(base64Url.decode(normalized));
+    final Map<String, dynamic> claims = json.decode(resp);
+    return claims;
   }
 }
