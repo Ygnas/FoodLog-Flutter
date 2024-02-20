@@ -177,6 +177,9 @@ class _HomeScreenState extends State<HomeScreen> {
           if (index == 1) {
             context.push('/addlisting');
           }
+          if (index == 2) {
+            context.push('/community');
+          }
         },
       ),
     );
