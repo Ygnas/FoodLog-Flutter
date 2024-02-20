@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:food_log/src/providers/user_provider.dart';
+import 'package:food_log/src/screens/community/community.dart';
 import 'package:food_log/src/screens/home/home.dart';
 import 'package:food_log/src/screens/listings/add_listing.dart';
 import 'package:food_log/src/screens/listings/listings.dart';
@@ -63,6 +64,11 @@ final GoRouter _router = GoRouter(
             return const ProfileScreen();
           },
         ),
+        GoRoute(
+            path: 'community',
+            builder: (BuildContext context, GoRouterState state) {
+              return const CommunityScreen();
+            }),
       ],
     ),
   ],
