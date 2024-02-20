@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:food_log/src/providers/user_provider.dart';
+import 'package:food_log/src/widgets/like_commnet.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  final bool refreshListings;
-  const HomeScreen({super.key, required this.refreshListings});
+class CommunityScreen extends StatefulWidget {
+  const CommunityScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<CommunityScreen> createState() => _CommunityScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _CommunityScreenState extends State<CommunityScreen> {
   Future<List<Listing>>? listings;
 
   @override
@@ -23,15 +23,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Future<void> refreshListings() async {
       setState(() {
-        listings = listingProvider.loadListings();
+        listings = listingProvider
+            .loadListings()
+            .then((value) => value.where((element) => element.shared).toList());
       });
     }
 
-    if (widget.refreshListings) {
-      refreshListings();
-    }
-
-    listings ??= listingProvider.loadListings();
+    listings ??= listingProvider
+        .loadListings()
+        .then((value) => value.where((element) => element.shared).toList());
 
     return Scaffold(
       appBar: AppBar(
@@ -139,6 +139,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                           subtitle: Text(snapshot
                                               .data![index].description),
                                         ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            LikeComment(
+                                              data: snapshot
+                                                  .data![index].likes.length,
+                                              dataName: '',
+                                              icon: Icons
+                                                  .thumb_up_off_alt_outlined,
+                                            ),
+                                            const SizedBox(width: 16.0),
+                                            LikeComment(
+                                                data: snapshot.data![index]
+                                                    .comments.length,
+                                                dataName: 'comments',
+                                                icon: Icons
+                                                    .mode_comment_outlined),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -159,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 1,
+        currentIndex: 2,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
