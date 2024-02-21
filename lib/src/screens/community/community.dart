@@ -109,7 +109,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                                         ListTile(
                                           contentPadding:
                                               const EdgeInsets.symmetric(
-                                                  horizontal: 16.0,
+                                                  horizontal: 8.0,
                                                   vertical: 8.0),
                                           leading: ClipRRect(
                                             borderRadius:
@@ -139,25 +139,29 @@ class _CommunityScreenState extends State<CommunityScreen> {
                                           subtitle: Text(snapshot
                                               .data![index].description),
                                         ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            LikeComment(
-                                              data: snapshot
-                                                  .data![index].likes.length,
-                                              dataName: '',
-                                              icon: Icons
-                                                  .thumb_up_off_alt_outlined,
-                                            ),
-                                            const SizedBox(width: 16.0),
-                                            LikeComment(
-                                                data: snapshot.data![index]
-                                                    .comments.length,
-                                                dataName: 'comments',
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              LikeComment(
+                                                data: snapshot
+                                                    .data![index].likes.length,
+                                                dataName: '',
                                                 icon: Icons
-                                                    .mode_comment_outlined),
-                                          ],
+                                                    .thumb_up_off_alt_outlined,
+                                              ),
+                                              const SizedBox(width: 16.0),
+                                              LikeComment(
+                                                  data: snapshot.data![index]
+                                                      .comments.length,
+                                                  dataName: 'comments',
+                                                  icon: Icons
+                                                      .mode_comment_outlined),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
