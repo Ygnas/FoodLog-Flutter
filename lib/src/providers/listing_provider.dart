@@ -19,6 +19,12 @@ class ListingProvider extends ChangeNotifier {
     notifyListeners();
     return listings;
   }
+
+  Future<List<Listing>> loadAllListings() async {
+    listings = await getAllListings();
+    notifyListeners();
+    return listings;
+  }
 }
 
 String _token = "";
@@ -41,6 +47,26 @@ Future<List<Listing>> getListing() async {
     return listings;
   }
   final url = Uri.http(AppConfig.ipAddress, "/listings");
+  final response = await http.get(
+    url,
+    headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $_token',
+    },
+  );
+  if (response.statusCode == 200 && response.body != "null") {
+    final List<dynamic> data = json.decode(response.body);
+    listings = data.map((e) => Listing.fromJson(e)).toList();
+  }
+  return listings;
+}
+
+Future<List<Listing>> getAllListings() async {
+  List<Listing> listings = [];
+  await fetchToken();
+  if (_token.isEmpty) {
+    return listings;
+  }
+  final url = Uri.http(AppConfig.ipAddress, "/all-listings");
   final response = await http.get(
     url,
     headers: {
