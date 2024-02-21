@@ -24,13 +24,13 @@ class _CommunityScreenState extends State<CommunityScreen> {
     Future<void> refreshListings() async {
       setState(() {
         listings = listingProvider
-            .loadListings()
+            .loadAllListings()
             .then((value) => value.where((element) => element.shared).toList());
       });
     }
 
     listings ??= listingProvider
-        .loadListings()
+        .loadAllListings()
         .then((value) => value.where((element) => element.shared).toList());
 
     return Scaffold(
