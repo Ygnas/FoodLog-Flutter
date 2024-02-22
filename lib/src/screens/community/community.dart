@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:food_log/src/providers/user_provider.dart';
-import 'package:food_log/src/widgets/like_commnet.dart';
+import 'package:food_log/src/widgets/like_comment.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
