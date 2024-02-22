@@ -25,6 +25,11 @@ class ListingProvider extends ChangeNotifier {
     notifyListeners();
     return listings;
   }
+
+  Future<http.Response> likeListing(String id, String email) async {
+    final response = await likeListing(id, email);
+    return response;
+  }
 }
 
 String _token = "";
@@ -123,6 +128,21 @@ Future<http.Response> updateListing(Listing listing) async {
       HttpHeaders.authorizationHeader: 'Bearer $_token',
     },
     body: json.encode(listing.toJson()),
+  );
+  return response;
+}
+
+Future<http.Response> likeListing(String id, String email) async {
+  await fetchToken();
+  if (_token.isEmpty) {
+    return http.Response("Unauthorized", 401);
+  }
+  final url = Uri.http(AppConfig.ipAddress, "/listings/$id/$email/like");
+  final response = await http.post(
+    url,
+    headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $_token',
+    },
   );
   return response;
 }

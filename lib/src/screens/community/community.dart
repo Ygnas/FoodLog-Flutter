@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:food_log/src/providers/user_provider.dart';
-import 'package:food_log/src/widgets/like_commnet.dart';
+import 'package:food_log/src/widgets/like_comment.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -152,6 +152,13 @@ class _CommunityScreenState extends State<CommunityScreen> {
                                                 dataName: '',
                                                 icon: Icons
                                                     .thumb_up_off_alt_outlined,
+                                                onTap: () async {
+                                                  await likeListing(
+                                                      snapshot.data![index].id!,
+                                                      snapshot
+                                                          .data![index].email!);
+                                                  refreshListings();
+                                                },
                                               ),
                                               const SizedBox(width: 16.0),
                                               LikeComment(
