@@ -39,6 +39,7 @@ class Listing extends ChangeNotifier {
   ListingType type;
   List<String> likes;
   List<Comment> comments;
+  String? email;
   DateTime? createdAt;
   DateTime? updatedAt;
 
@@ -51,6 +52,7 @@ class Listing extends ChangeNotifier {
       this.type = ListingType.dinner,
       this.likes = const [],
       this.comments = const [],
+      this.email,
       this.createdAt,
       this.updatedAt});
 
@@ -65,6 +67,7 @@ class Listing extends ChangeNotifier {
       likes: json['likes'] != null ? _parseLikes(json['likes']) : [],
       comments:
           json['comments'] != null ? _parseComments(json['comments']) : [],
+      email: json['user_email'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
@@ -80,6 +83,7 @@ class Listing extends ChangeNotifier {
       'type': _typeToString(type),
       'likes': _likesToJson(),
       'comments': _commentsToJson(),
+      'user_email': email,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
