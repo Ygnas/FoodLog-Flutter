@@ -152,6 +152,13 @@ class _CommunityScreenState extends State<CommunityScreen> {
                                                 dataName: '',
                                                 icon: Icons
                                                     .thumb_up_off_alt_outlined,
+                                                onTap: () async {
+                                                  await likeListing(
+                                                      snapshot.data![index].id!,
+                                                      snapshot
+                                                          .data![index].email!);
+                                                  refreshListings();
+                                                },
                                               ),
                                               const SizedBox(width: 16.0),
                                               LikeComment(
