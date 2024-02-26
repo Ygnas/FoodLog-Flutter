@@ -153,11 +153,25 @@ class _CommunityScreenState extends State<CommunityScreen> {
                                                 icon: Icons
                                                     .thumb_up_off_alt_outlined,
                                                 onTap: () async {
+                                                  setState(() {
+                                                    snapshot.data![index].likes
+                                                            .contains(
+                                                                userProvider
+                                                                    .user.email)
+                                                        ? snapshot
+                                                            .data![index].likes
+                                                            .remove(userProvider
+                                                                .user.email)
+                                                        : snapshot
+                                                            .data![index].likes
+                                                            .add(userProvider
+                                                                .user.email);
+                                                  });
+
                                                   await likeListing(
                                                       snapshot.data![index].id!,
                                                       snapshot
                                                           .data![index].email!);
-                                                  refreshListings();
                                                 },
                                               ),
                                               const SizedBox(width: 16.0),
