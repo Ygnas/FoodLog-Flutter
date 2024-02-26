@@ -4,12 +4,12 @@ enum ListingType { breakfast, lunch, dinner, snack }
 
 class Comment {
   String comment;
-  DateTime createdAt;
+  DateTime? createdAt;
   String email;
 
   Comment({
     required this.comment,
-    required this.createdAt,
+    this.createdAt,
     required this.email,
   });
 
@@ -23,9 +23,9 @@ class Comment {
 
   Map<String, dynamic> toJson() {
     return {
-      'comment': comment,
-      'created_at': createdAt.toIso8601String(),
       'email': email,
+      'comment': comment,
+      'created_at': DateTime.now().toUtc().toIso8601String(),
     };
   }
 }
