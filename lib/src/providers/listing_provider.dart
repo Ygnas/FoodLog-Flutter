@@ -146,3 +146,22 @@ Future<http.Response> likeListing(String id, String email) async {
   );
   return response;
 }
+
+Future<http.Response> commentListing(
+    String id, String email, Comment comment) async {
+  await fetchToken();
+  if (_token.isEmpty) {
+    return http.Response("Unauthorized", 401);
+  }
+  final url = Uri.http(AppConfig.ipAddress, "/listings/$id/$email/comment");
+
+  final sendComment = json.encode(comment.toJson());
+  final response = await http.post(
+    url,
+    headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $_token',
+    },
+    body: sendComment,
+  );
+  return response;
+}
