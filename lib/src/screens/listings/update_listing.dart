@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
@@ -15,6 +16,8 @@ class _UpdateListingScreenState extends State<UpdateListingScreen> {
   bool checkedValue = false;
   ListingType selectedType = ListingType.breakfast;
 
+  late CameraDescription firstCamera;
+
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final formKey = GlobalKey<FormState>();
@@ -26,6 +29,8 @@ class _UpdateListingScreenState extends State<UpdateListingScreen> {
     checkedValue = widget.listing.shared;
     titleController.text = widget.listing.title;
     descriptionController.text = widget.listing.description;
+
+    availableCameras().then((value) => firstCamera = value.first);
   }
 
   @override
@@ -43,6 +48,26 @@ class _UpdateListingScreenState extends State<UpdateListingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: InteractiveViewer(
+                    child: widget.listing.image.isNotEmpty
+                        ? FadeInImage(
+                            placeholder: const AssetImage("assets/food.png"),
+                            image: NetworkImage(listing.image),
+                          )
+                        : const SizedBox(
+                            width: 120,
+                            child: Icon(
+                              Icons.image,
+                              size: 120.0,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
               TextFormField(
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -105,6 +130,20 @@ class _UpdateListingScreenState extends State<UpdateListingScreen> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
+                  await context.push('/takePicture', extra: {
+                    'camera': firstCamera,
+                    'listingId': widget.listing.id
+                  }).then((value) {
+                    if (value != null) {
+                      listing.image = value.toString().replaceAll('"', "");
+                      imageCache.clear();
+                    }
+                  });
+                },
+                child: const Text('Upload Picture'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     listing.title = titleController.text;
                     listing.description = descriptionController.text;
@@ -113,8 +152,7 @@ class _UpdateListingScreenState extends State<UpdateListingScreen> {
                     final response = await updateListing(listing);
                     if (response.statusCode == 200) {
                       if (context.mounted) {
-                        context.go('/', extra: listing);
-                        // GoRouter.of(context).go('/', extra: true);
+                        context.go('/', extra: true);
                       }
                     } else {
                       if (context.mounted) {
@@ -125,7 +163,6 @@ class _UpdateListingScreenState extends State<UpdateListingScreen> {
                         );
                       }
                     }
-                    // Navigator.pop(context);
                   }
                 },
                 child: const Text('Update Listing'),

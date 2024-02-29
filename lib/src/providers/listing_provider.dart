@@ -113,6 +113,11 @@ Future<http.Response> deleteListing(String id) async {
       HttpHeaders.authorizationHeader: 'Bearer $_token',
     },
   );
+
+  if (response.statusCode == 200) {
+    deleteImage(id);
+  }
+
   return response;
 }
 
@@ -162,6 +167,40 @@ Future<http.Response> commentListing(
       HttpHeaders.authorizationHeader: 'Bearer $_token',
     },
     body: sendComment,
+  );
+  return response;
+}
+
+Future<http.Response> uploadImage(File image, String id) async {
+  await fetchToken();
+  if (_token.isEmpty) {
+    return http.Response("Unauthorized", 401);
+  }
+  final url = Uri.http(AppConfig.ipAddress, "/upload/$id");
+
+  final response = await http.post(
+    url,
+    headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $_token',
+      HttpHeaders.contentTypeHeader: 'image/jpeg',
+    },
+    body: await image.readAsBytes(),
+  );
+
+  return response;
+}
+
+Future<http.Response> deleteImage(String id) async {
+  await fetchToken();
+  if (_token.isEmpty) {
+    return http.Response("Unauthorized", 401);
+  }
+  final url = Uri.http(AppConfig.ipAddress, "/images/$id/delete");
+  final response = await http.delete(
+    url,
+    headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $_token',
+    },
   );
   return response;
 }
