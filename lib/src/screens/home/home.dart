@@ -117,6 +117,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                             child: snapshot.data![index].image
                                                     .isNotEmpty
                                                 ? FadeInImage(
+                                                    key: ValueKey(snapshot
+                                                        .data![index].image),
                                                     placeholder:
                                                         const AssetImage(
                                                             "assets/food.png"),
