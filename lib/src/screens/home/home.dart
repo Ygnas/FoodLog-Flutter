@@ -38,6 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Food Log'),
         actions: [
           IconButton(
+            onPressed: () {
+              showSearch(context: context, delegate: CustomSearchDelegate());
+            },
+            icon: const Icon(Icons.search),
+          ),
+          IconButton(
             icon: const Icon(Icons.account_circle_rounded),
             onPressed: () {
               userProvider.user.token.isEmpty
@@ -184,6 +190,86 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
       ),
+    );
+  }
+}
+
+class CustomSearchDelegate extends SearchDelegate {
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () {
+          query = "";
+        },
+        icon: const Icon(Icons.clear),
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        close(context, null);
+      },
+      icon: const Icon(Icons.arrow_back),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final listings = context.read<ListingProvider>().listings;
+    final results = listings
+        .where((element) =>
+            element.title.toLowerCase().contains(query.toLowerCase()) ||
+            element.description.toLowerCase().contains(query.toLowerCase()) ||
+            element.type.name.toLowerCase().contains(query.toLowerCase()) ||
+            element.createdAt
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()))
+        .toList();
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(results[index].title),
+          subtitle: Text(results[index].description),
+          onTap: () {
+            close(context, results[index]);
+            context.push('/listings', extra: results[index]);
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final listings = context.read<ListingProvider>().listings;
+    final results = listings
+        .where((element) =>
+            element.title.toLowerCase().contains(query.toLowerCase()) ||
+            element.description.toLowerCase().contains(query.toLowerCase()) ||
+            element.type.name.toLowerCase().contains(query.toLowerCase()) ||
+            element.createdAt
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()))
+        .toList();
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(results[index].title),
+          subtitle: Text(results[index].description),
+          onTap: () {
+            close(context, results[index]);
+            context.push('/listings', extra: results[index]);
+          },
+        );
+      },
     );
   }
 }
