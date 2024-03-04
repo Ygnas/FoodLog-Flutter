@@ -28,10 +28,12 @@ class RegisterForm extends StatelessWidget {
           child: Column(
             children: [
               const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('Register', style: TextStyle(fontSize: 20)),
+                    child: Text('Create New Account',
+                        style: TextStyle(fontSize: 20)),
                   )
                 ],
               ),
