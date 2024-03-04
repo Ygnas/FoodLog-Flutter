@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 
 enum ListingType { breakfast, lunch, dinner, snack }
 
@@ -39,6 +40,7 @@ class Listing extends ChangeNotifier {
   ListingType type;
   List<String> likes;
   List<Comment> comments;
+  final LocationData? location;
   String? email;
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -53,6 +55,7 @@ class Listing extends ChangeNotifier {
       this.likes = const [],
       this.comments = const [],
       this.email,
+      this.location,
       this.createdAt,
       this.updatedAt});
 
@@ -68,6 +71,7 @@ class Listing extends ChangeNotifier {
       comments:
           json['comments'] != null ? _parseComments(json['comments']) : [],
       email: json['user_email'],
+      location: _parseLocation(json['location']),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
@@ -84,6 +88,7 @@ class Listing extends ChangeNotifier {
       'likes': _likesToJson(),
       'comments': _commentsToJson(),
       'user_email': email,
+      'location': _locationToJson(),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -117,6 +122,26 @@ class Listing extends ChangeNotifier {
       default:
         return "dinner";
     }
+  }
+
+  static LocationData? _parseLocation(Map<String, dynamic>? locationJson) {
+    if (locationJson != null && locationJson.isNotEmpty) {
+      return LocationData.fromMap({
+        'latitude': locationJson['latitude'].toDouble(),
+        'longitude': locationJson['longitude'].toDouble(),
+      });
+    }
+    return null;
+  }
+
+  Map<String, dynamic>? _locationToJson() {
+    if (location != null) {
+      return {
+        'latitude': location!.latitude,
+        'longitude': location!.longitude,
+      };
+    }
+    return null;
   }
 
   static List<String> _parseLikes(List<dynamic> likesJson) {
