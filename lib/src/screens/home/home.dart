@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:food_log/src/providers/user_provider.dart';
+import 'package:food_log/src/widgets/bottom_navigation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -165,31 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
           : const Center(
               child: CircularProgressIndicator(),
             ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 1,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Add',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.forum_rounded),
-            label: 'Community',
-          )
-        ],
-        onTap: (index) {
-          if (index == 1) {
-            context.push('/addlisting');
-          }
-          if (index == 2) {
-            context.push('/community');
-          }
-        },
-      ),
+      bottomNavigationBar: const MyNavigation(selectedIndex: 0),
     );
   }
 }
