@@ -85,10 +85,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          ListingBarChart(
-              maxItemCount: maxItemCount,
-              showingBarGroups: showingBarGroups,
-              bottomTitles: bottomTitles),
+          SizedBox(
+            height: 200,
+            child: ListingBarChart(
+                maxItemCount: maxItemCount,
+                showingBarGroups: showingBarGroups,
+                bottomTitles: bottomTitles),
+          ),
           const Spacer(),
           GestureDetector(
             onTap: () {

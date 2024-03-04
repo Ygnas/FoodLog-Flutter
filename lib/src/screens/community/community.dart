@@ -36,7 +36,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Food Log'),
+        title: const Text('Community'),
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle_rounded),
