@@ -103,6 +103,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
+          // delete user button
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Confirm Account Deletion'),
+                    content: const Text(
+                        'Are you sure you want to delete your account?\nThis action cannot be undone.',
+                        style: TextStyle(color: Colors.red)),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          userProvider.deleteAccount();
+                          userProvider.logout();
+                          context.go('/login');
+                        },
+                        child: const Text('Delete',
+                            style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'Delete Account',
+                style: TextStyle(fontSize: 20, color: Colors.red),
+              ),
+            ),
+          ),
         ],
       ),
     );
