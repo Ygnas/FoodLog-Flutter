@@ -18,7 +18,9 @@ class RegisterScreen extends StatelessWidget {
     final formKey = GlobalKey<FormState>();
 
     return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          title: const Text('Register'),
+        ),
         body: RegisterForm(
             formKey: formKey,
             usernameController: usernameController,
