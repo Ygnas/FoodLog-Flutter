@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:location/location.dart';
 
 class AddListingScreen extends StatefulWidget {
   const AddListingScreen({super.key});
@@ -17,6 +18,46 @@ class _AddListingScreenState extends State<AddListingScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+
+  LocationData? _currentLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    _getLocation();
+  }
+
+  Future<void> _getLocation() async {
+    Location location = Location();
+
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+    LocationData locationData;
+
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return;
+      }
+    }
+
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    locationData = await location.getLocation();
+
+    if (mounted) {
+      setState(() {
+        _currentLocation = locationData;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +134,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () async {
+                  // await _getLocation();
                   if (formKey.currentState!.validate()) {
                     final listing = Listing(
                       title: titleController.text,
@@ -101,12 +143,12 @@ class _AddListingScreenState extends State<AddListingScreen> {
                       type: selectedType,
                       comments: [],
                       likes: [],
+                      location: _currentLocation,
                     );
                     final response = await addListing(listing);
                     if (response.statusCode == 200) {
                       if (context.mounted) {
-                        // context.pushReplacement('/');
-                        GoRouter.of(context).go('/', extra: true);
+                        context.go('/', extra: true);
                       }
                     } else {
                       if (context.mounted) {
@@ -117,7 +159,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
                         );
                       }
                     }
-                    // Navigator.pop(context);
                   }
                 },
                 child: const Text('Add Listing'),
