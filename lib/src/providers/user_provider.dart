@@ -1,4 +1,5 @@
 import "dart:convert";
+import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
@@ -87,5 +88,17 @@ class UserProvider extends ChangeNotifier {
     final String resp = utf8.decode(base64Url.decode(normalized));
     final Map<String, dynamic> claims = json.decode(resp);
     return claims;
+  }
+
+  Future<http.Response> deleteAccount() async {
+    const storage = FlutterSecureStorage();
+    final claims = getClaims();
+    final token = await storage.read(key: 'jwtToken');
+    final email = base64Encode(utf8.encode(claims['email']));
+    final url = Uri.http(AppConfig.ipAddress, '/users/delete/$email');
+    final response = await http.delete(url, headers: {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    });
+    return response;
   }
 }
