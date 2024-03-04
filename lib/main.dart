@@ -10,6 +10,7 @@ import 'package:food_log/src/screens/listings/add_listing.dart';
 import 'package:food_log/src/screens/listings/listings.dart';
 import 'package:food_log/src/screens/listings/update_listing.dart';
 import 'package:food_log/src/screens/login/login.dart';
+import 'package:food_log/src/screens/map/map.dart';
 import 'package:food_log/src/screens/profile/profile.dart';
 import 'package:food_log/src/screens/register/register.dart';
 import 'package:go_router/go_router.dart';
@@ -81,6 +82,12 @@ final GoRouter _router = GoRouter(
               camera: extra['camera'] as CameraDescription,
               listingId: extra['listingId'] as String,
             );
+          },
+        ),
+        GoRoute(
+          path: 'map',
+          builder: (BuildContext context, GoRouterState state) {
+            return const MapScreen();
           },
         ),
       ],

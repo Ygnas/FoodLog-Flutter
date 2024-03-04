@@ -204,7 +204,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
               child: CircularProgressIndicator(),
             ),
       bottomNavigationBar: const MyNavigation(
-        selectedIndex: 2,
+        selectedIndex: 3,
       ),
     );
   }

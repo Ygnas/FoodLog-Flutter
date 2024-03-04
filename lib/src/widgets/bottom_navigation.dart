@@ -9,6 +9,7 @@ class MyNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
       elevation: 1,
       currentIndex: selectedIndex,
       items: const [
@@ -19,6 +20,10 @@ class MyNavigation extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.add),
           label: 'Add',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.map),
+          label: 'Map',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.forum_rounded),
@@ -33,6 +38,9 @@ class MyNavigation extends StatelessWidget {
           context.push('/addlisting');
         }
         if (index == 2) {
+          context.push('/map');
+        }
+        if (index == 3) {
           context.push('/community');
         }
       },
