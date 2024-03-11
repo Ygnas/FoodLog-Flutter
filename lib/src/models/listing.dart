@@ -40,7 +40,7 @@ class Listing extends ChangeNotifier {
   ListingType type;
   List<String> likes;
   List<Comment> comments;
-  final LocationData? location;
+  LocationData? location;
   String? email;
   DateTime? createdAt;
   DateTime? updatedAt;
