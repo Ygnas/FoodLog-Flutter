@@ -21,7 +21,7 @@ class MapScreen extends StatelessWidget {
         options: MapOptions(
           initialCenter:
               _calculateCenter(listingProvider.listings) ?? const LatLng(0, 0),
-          initialZoom: 10,
+          initialZoom: 14,
         ),
         children: [
           TileLayer(
