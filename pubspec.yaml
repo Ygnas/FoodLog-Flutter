@@ -7,6 +7,7 @@ environment:
   sdk: ">=3.2.5 <4.0.0"
 
 dependencies:
+  background_fetch: ^1.2.4
   camera: ^0.10.5+9
   fl_chart: ^0.66.2
   flutter:
