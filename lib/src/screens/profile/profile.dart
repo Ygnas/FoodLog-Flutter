@@ -9,7 +9,7 @@ import 'package:food_log/src/providers/user_provider.dart';
 import 'package:food_log/src/widgets/listing_bar_chart.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
+import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import 'package:background_fetch/background_fetch.dart';
 
 late List<BarChartGroupData> barGroups;
@@ -26,9 +26,7 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
     return;
   }
   print('[BackgroundFetch] Headless event received.');
-  await NotificationService().init();
-  await NotificationService().initializeNotificationChannels();
-  await NotificationService().showNotifications();
+  showNotification();
   BackgroundFetch.finish(taskId);
 }
 
@@ -46,8 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late int maxItemCount = 0;
 
   bool _enabled = true;
-  int _status = 0;
-  List<DateTime> _events = [];
+  final List<DateTime> _events = [];
 
   @override
   void initState() {
@@ -56,6 +53,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     initPlatformState();
     NotificationService().init();
     NotificationService().initializeNotificationChannels();
+    readNotificationSetting().then((value) {
+      setState(() {
+        _enabled = value;
+        if (value) {
+          NotificationService().showNotificationDaily();
+        } else {
+          NotificationService().cancelAllNotifications();
+        }
+      });
+    });
     final listingProvider = context.read<ListingProvider>();
     listingProvider.loadListings();
     if (listingProvider.listings.isNotEmpty) {
@@ -77,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Configure BackgroundFetch.
     int status = await BackgroundFetch.configure(
         BackgroundFetchConfig(
-            minimumFetchInterval: 15,
+            minimumFetchInterval: 1450,
             stopOnTerminate: false,
             enableHeadless: true,
             requiresBatteryNotLow: false,
@@ -87,13 +94,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             startOnBoot: true,
             requiredNetworkType: NetworkType.NONE), (String taskId) async {
       // <-- Event handler
-      await NotificationService().init();
-      await NotificationService().initializeNotificationChannels();
-      await NotificationService().showNotifications();
+      showNotification();
       // This is the fetch-event callback.
       print("[BackgroundFetch] Event received $taskId");
       setState(() {
-        _events.insert(0, new DateTime.now());
+        _events.insert(0, DateTime.now());
       });
       // IMPORTANT:  You must signal completion of your task or the OS can punish your app
       // for taking too long in the background.
@@ -105,9 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       BackgroundFetch.finish(taskId);
     });
     print('[BackgroundFetch] configure success: $status');
-    setState(() {
-      _status = status;
-    });
+    setState(() {});
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -118,6 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _onClickEnable(enabled) {
     setState(() {
       _enabled = enabled;
+      saveNotificationSetting(enabled);
     });
     if (enabled) {
       BackgroundFetch.start().then((int status) {
@@ -177,18 +181,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             height: 200,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ListingBarChart(
-                  maxItemCount: maxItemCount,
-                  showingBarGroups: showingBarGroups,
-                  bottomTitles: bottomTitles),
+              child: Column(
+                children: [
+                  ListingBarChart(
+                      maxItemCount: maxItemCount,
+                      showingBarGroups: showingBarGroups,
+                      bottomTitles: bottomTitles),
+                ],
+              ),
             ),
           ),
           const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Notifications about snack limit:'),
-              Checkbox(
+              const Text('Logging reminder:'),
+              Switch(
                 value: _enabled,
                 onChanged: _onClickEnable,
               ),
@@ -336,4 +344,21 @@ Widget legendItem(String name, Color color) {
       ),
     ],
   );
+}
+
+void saveNotificationSetting(bool enabled) async {
+  const storage = FlutterSecureStorage();
+  await storage.write(key: "notification", value: enabled.toString());
+}
+
+Future<bool> readNotificationSetting() async {
+  const storage = FlutterSecureStorage();
+  final setting = await storage.read(key: "notification");
+  return setting?.toLowerCase() == 'true' ? true : false;
+}
+
+void showNotification() async {
+  await NotificationService().init();
+  await NotificationService().initializeNotificationChannels();
+  await NotificationService().showNotifications();
 }
