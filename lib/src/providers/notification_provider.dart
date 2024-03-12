@@ -90,7 +90,7 @@ class NotificationService {
       0,
       'Consumption Reminder',
       "Don't forget to log your consumptions today!",
-      RepeatInterval.everyMinute,
+      RepeatInterval.daily,
       platformChannelSpecifics,
     );
   }
