@@ -47,8 +47,8 @@ class NotificationService {
   Future<void> showNotifications() async {
     await flutterLocalNotificationsPlugin.show(
       0,
-      "Notification Title",
-      "This is the Notification Body!",
+      "Consumption Reminder",
+      "Don't forget to log your consumptions today!",
       const NotificationDetails(android: androidNotificationDetails),
     );
   }
@@ -88,8 +88,8 @@ class NotificationService {
         NotificationDetails(android: androidPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.periodicallyShow(
       0,
-      'Notification Title',
-      'Notification Body',
+      'Consumption Reminder',
+      "Don't forget to log your consumptions today!",
       RepeatInterval.everyMinute,
       platformChannelSpecifics,
     );
