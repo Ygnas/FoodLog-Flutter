@@ -48,7 +48,7 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.show(
       0,
       "Consumption Reminder",
-      "Snack limit reached for today!",
+      "Don't forget to log your consumptions today!",
       const NotificationDetails(android: androidNotificationDetails),
     );
   }
@@ -89,7 +89,7 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.periodicallyShow(
       0,
       'Consumption Reminder',
-      'Snack limit reached for today!',
+      "Don't forget to log your consumptions today!",
       RepeatInterval.everyMinute,
       platformChannelSpecifics,
     );
