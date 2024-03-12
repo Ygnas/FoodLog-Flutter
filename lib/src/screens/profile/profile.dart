@@ -4,12 +4,33 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
+import 'package:food_log/src/providers/notification_provider.dart';
 import 'package:food_log/src/providers/user_provider.dart';
 import 'package:food_log/src/widgets/listing_bar_chart.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import 'package:background_fetch/background_fetch.dart';
+
 late List<BarChartGroupData> barGroups;
+
+@pragma('vm:entry-point')
+void backgroundFetchHeadlessTask(HeadlessTask task) async {
+  String taskId = task.taskId;
+  bool isTimeout = task.timeout;
+  if (isTimeout) {
+    // This task has exceeded its allowed running-time.
+    // You must stop what you're doing and immediately .finish(taskId)
+    print("[BackgroundFetch] Headless task timed-out: $taskId");
+    BackgroundFetch.finish(taskId);
+    return;
+  }
+  print('[BackgroundFetch] Headless event received.');
+  await NotificationService().init();
+  await NotificationService().initializeNotificationChannels();
+  await NotificationService().showNotifications();
+  BackgroundFetch.finish(taskId);
+}
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -24,9 +45,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late int maxItemCount = 0;
 
+  bool _enabled = true;
+  int _status = 0;
+  List<DateTime> _events = [];
+
   @override
   void initState() {
+    WidgetsFlutterBinding.ensureInitialized();
     super.initState();
+    initPlatformState();
+    NotificationService().init();
+    NotificationService().initializeNotificationChannels();
     final listingProvider = context.read<ListingProvider>();
     listingProvider.loadListings();
     if (listingProvider.listings.isNotEmpty) {
@@ -41,6 +70,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else {
       rawBarGroups = [];
       showingBarGroups = [];
+    }
+  }
+
+  Future<void> initPlatformState() async {
+    // Configure BackgroundFetch.
+    int status = await BackgroundFetch.configure(
+        BackgroundFetchConfig(
+            minimumFetchInterval: 15,
+            stopOnTerminate: false,
+            enableHeadless: true,
+            requiresBatteryNotLow: false,
+            requiresCharging: false,
+            requiresStorageNotLow: false,
+            requiresDeviceIdle: false,
+            startOnBoot: true,
+            requiredNetworkType: NetworkType.NONE), (String taskId) async {
+      // <-- Event handler
+      await NotificationService().init();
+      await NotificationService().initializeNotificationChannels();
+      await NotificationService().showNotifications();
+      // This is the fetch-event callback.
+      print("[BackgroundFetch] Event received $taskId");
+      setState(() {
+        _events.insert(0, new DateTime.now());
+      });
+      // IMPORTANT:  You must signal completion of your task or the OS can punish your app
+      // for taking too long in the background.
+      BackgroundFetch.finish(taskId);
+    }, (String taskId) async {
+      // <-- Task timeout handler.
+      // This task has exceeded its allowed running-time.  You must stop what you're doing and immediately .finish(taskId)
+      print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
+      BackgroundFetch.finish(taskId);
+    });
+    print('[BackgroundFetch] configure success: $status');
+    setState(() {
+      _status = status;
+    });
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+  }
+
+  void _onClickEnable(enabled) {
+    setState(() {
+      _enabled = enabled;
+    });
+    if (enabled) {
+      BackgroundFetch.start().then((int status) {
+        print('[BackgroundFetch] start success: $status');
+      }).catchError((e) {
+        print('[BackgroundFetch] start FAILURE: $e');
+      });
+    } else {
+      BackgroundFetch.stop().then((int status) {
+        print('[BackgroundFetch] stop success: $status');
+      });
     }
   }
 
@@ -87,12 +175,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 20),
           SizedBox(
             height: 200,
-            child: ListingBarChart(
-                maxItemCount: maxItemCount,
-                showingBarGroups: showingBarGroups,
-                bottomTitles: bottomTitles),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListingBarChart(
+                  maxItemCount: maxItemCount,
+                  showingBarGroups: showingBarGroups,
+                  bottomTitles: bottomTitles),
+            ),
           ),
           const Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Notifications about snack limit:'),
+              Checkbox(
+                value: _enabled,
+                onChanged: _onClickEnable,
+              ),
+            ],
+          ),
           GestureDetector(
             onTap: () {
               userProvider.logout();
@@ -106,7 +207,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-          // delete user button
           GestureDetector(
             onTap: () {
               showDialog(
