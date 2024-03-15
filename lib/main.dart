@@ -103,6 +103,7 @@ class MainApp extends StatelessWidget {
     final userProvider = context.read<UserProvider>();
     userProvider.loadToken();
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       routerConfig: _router,
     );
   }
