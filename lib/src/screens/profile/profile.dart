@@ -21,11 +21,11 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
   if (isTimeout) {
     // This task has exceeded its allowed running-time.
     // You must stop what you're doing and immediately .finish(taskId)
-    print("[BackgroundFetch] Headless task timed-out: $taskId");
+    // print("[BackgroundFetch] Headless task timed-out: $taskId");
     BackgroundFetch.finish(taskId);
     return;
   }
-  print('[BackgroundFetch] Headless event received.');
+  // print('[BackgroundFetch] Headless event received.');
   showNotification();
   BackgroundFetch.finish(taskId);
 }
@@ -82,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> initPlatformState() async {
     // Configure BackgroundFetch.
-    int status = await BackgroundFetch.configure(
+    await BackgroundFetch.configure(
         BackgroundFetchConfig(
             minimumFetchInterval: 1450,
             stopOnTerminate: false,
@@ -96,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // <-- Event handler
       showNotification();
       // This is the fetch-event callback.
-      print("[BackgroundFetch] Event received $taskId");
+      // print("[BackgroundFetch] Event received $taskId");
       setState(() {
         _events.insert(0, DateTime.now());
       });
@@ -106,10 +106,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }, (String taskId) async {
       // <-- Task timeout handler.
       // This task has exceeded its allowed running-time.  You must stop what you're doing and immediately .finish(taskId)
-      print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
+      // print("[BackgroundFetch] TASK TIMEOUT taskId: $taskId");
       BackgroundFetch.finish(taskId);
     });
-    print('[BackgroundFetch] configure success: $status');
+    // print('[BackgroundFetch] configure success: $status');
     setState(() {});
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -125,13 +125,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
     if (enabled) {
       BackgroundFetch.start().then((int status) {
-        print('[BackgroundFetch] start success: $status');
+        // print('[BackgroundFetch] start success: $status');
       }).catchError((e) {
-        print('[BackgroundFetch] start FAILURE: $e');
+        // print('[BackgroundFetch] start FAILURE: $e');
       });
     } else {
       BackgroundFetch.stop().then((int status) {
-        print('[BackgroundFetch] stop success: $status');
+        // print('[BackgroundFetch] stop success: $status');
       });
     }
   }
@@ -143,7 +143,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        centerTitle: true,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -165,6 +164,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             'Email: ${userProvider.user.email}',
             style: const TextStyle(fontSize: 20),
           ),
+          const SizedBox(height: 20),
+          const Divider(),
           Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
@@ -191,17 +192,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-          const Spacer(),
+          const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Logging reminder:'),
-              Switch(
-                value: _enabled,
-                onChanged: _onClickEnable,
+              Expanded(
+                child: SwitchListTile(
+                  title: const Text(
+                    'Food Log reminder:',
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                  value: _enabled,
+                  onChanged: _onClickEnable,
+                ),
               ),
+              const SizedBox(height: 8.0),
             ],
           ),
+          const Spacer(),
           GestureDetector(
             onTap: () {
               userProvider.logout();
