@@ -64,6 +64,19 @@ class _ListingScreenState extends State<ListingScreen> {
                           data: widget.listing.likes.length,
                           dataName: '',
                           icon: Icons.thumb_up_off_alt_outlined,
+                          onTap: () async {
+                            setState(() {
+                              widget.listing.likes
+                                      .contains(userProvider.user.email)
+                                  ? widget.listing.likes
+                                      .remove(userProvider.user.email)
+                                  : widget.listing.likes
+                                      .add(userProvider.user.email);
+                            });
+
+                            await likeListing(
+                                widget.listing.id!, widget.listing.email!);
+                          },
                         ),
                         const SizedBox(width: 16.0),
                         LikeComment(

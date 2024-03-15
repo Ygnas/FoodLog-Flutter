@@ -57,37 +57,11 @@ List<Marker> _buildMarkers(BuildContext context, List<Listing> listings) {
               LatLng(listing.location!.latitude!, listing.location!.longitude!),
           child: GestureDetector(
             onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Title: ${listing.title}'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (listing.image.isNotEmpty) ...[
-                          Image.network(listing.image),
-                          const SizedBox(height: 8.0),
-                        ],
-                        Text('Description: ${listing.description}')
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            context.push('/listings', extra: listing);
-                          },
-                          child: const Text('Visit Listing')),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('Close'),
-                      ),
-                    ],
-                  );
-                },
-              );
+              _showListingsDialog(
+                  context,
+                  listings,
+                  LatLng(listing.location!.latitude!,
+                      listing.location!.longitude!));
             },
             child: const Icon(
               Icons.location_pin,
@@ -100,6 +74,70 @@ List<Marker> _buildMarkers(BuildContext context, List<Listing> listings) {
   }
 
   return markers;
+}
+
+void _showListingsDialog(
+    BuildContext context, List<Listing> allListings, LatLng tappedLocation) {
+  List<Listing> nearbyListings = [];
+
+  for (var listing in allListings) {
+    if (listing.location != null &&
+        listing.location!.latitude == tappedLocation.latitude &&
+        listing.location!.longitude == tappedLocation.longitude) {
+      nearbyListings.add(listing);
+    }
+  }
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Listings nearby'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var listing in nearbyListings) ...[
+              ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: listing.image.isNotEmpty
+                      ? FadeInImage(
+                          key: ValueKey(listing.image),
+                          placeholder: const AssetImage("assets/food.png"),
+                          image: NetworkImage(listing.image),
+                          fit: BoxFit.cover,
+                          width: 80.0,
+                          height: double.infinity,
+                        )
+                      : const SizedBox(
+                          width: 80,
+                          child: Icon(
+                            Icons.image,
+                            size: 40.0,
+                          ),
+                        ),
+                ),
+                title: Text(listing.title),
+                subtitle: Text(listing.description),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.push('/listings', extra: listing);
+                },
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Close'),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 LatLng? _calculateCenter(List<Listing> listings) {
