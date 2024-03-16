@@ -140,6 +140,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
 
+    int totalSnacks = rawBarGroups.fold(
+        0, (sum, group) => sum + group.barRods[0].toY.toInt());
+    int totalOthers = rawBarGroups.fold(
+        0, (sum, group) => sum + group.barRods[1].toY.toInt());
+
+    double progressSnacks = totalSnacks / 7;
+    double progressOthers = totalOthers / 21;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -148,10 +156,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const SizedBox(height: 20),
-          const Center(
-            child: Icon(
-              Icons.account_circle_rounded,
-              size: 100,
+          Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                const Icon(
+                  Icons.account_circle_rounded,
+                  size: 100,
+                ),
+                SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 8,
+                          value: progressSnacks,
+                          valueColor:
+                              const AlwaysStoppedAnimation<Color>(Colors.blue),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 120,
+                        height: 120,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 8,
+                          value: progressOthers,
+                          valueColor:
+                              const AlwaysStoppedAnimation<Color>(Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 20),
@@ -215,12 +257,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               userProvider.logout();
               context.go('/login');
             },
-            child: const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                'Logout',
-                style: TextStyle(fontSize: 20, color: Colors.red),
-              ),
+            child: const Text(
+              'Logout',
+              style: TextStyle(fontSize: 20, color: Colors.red),
             ),
           ),
           GestureDetector(
