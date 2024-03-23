@@ -24,10 +24,11 @@ class LoginForm extends StatelessWidget {
           child: Column(
             children: [
               const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('Login', style: TextStyle(fontSize: 20)),
+                    child: Text('Welcome', style: TextStyle(fontSize: 20)),
                   )
                 ],
               ),
@@ -100,7 +101,7 @@ class LoginForm extends StatelessWidget {
                                   const Text('Don\'t have an account?'),
                                   TextButton(
                                     onPressed: () async {
-                                      context.go("/register");
+                                      context.push("/register");
                                     },
                                     child: const Text('Register'),
                                   )

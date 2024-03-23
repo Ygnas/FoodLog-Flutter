@@ -15,7 +15,9 @@ class LoginScreen extends StatelessWidget {
     final formKey = GlobalKey<FormState>();
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
       body: LoginForm(
           formKey: formKey,
           userProvider: userProvider,

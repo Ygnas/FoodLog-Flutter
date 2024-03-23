@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:food_log/src/providers/user_provider.dart';
+import 'package:food_log/src/widgets/bottom_navigation.dart';
+import 'package:food_log/src/widgets/filter_button.dart';
+import 'package:food_log/src/widgets/search_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  DateTime? selectedDate;
   Future<List<Listing>>? listings;
 
   @override
@@ -37,6 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Food Log'),
         actions: [
+          FilterButton(
+            selectedDate: selectedDate,
+            onDateSelected: (date) {
+              setState(() {
+                selectedDate = date;
+              });
+            },
+          ),
+          const SearchButton(),
           IconButton(
             icon: const Icon(Icons.account_circle_rounded),
             onPressed: () {
@@ -51,30 +64,52 @@ class _HomeScreenState extends State<HomeScreen> {
       body: userProvider.user.token != ""
           ? Column(
               children: [
+                selectedDate != null
+                    ? InputChip(
+                        label: Text(
+                            "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}"),
+                        selected: true,
+                        onDeleted: () {
+                          setState(() {
+                            selectedDate = null;
+                          });
+                        },
+                      )
+                    : const SizedBox(),
                 Expanded(
                   child: FutureBuilder(
                     future: listings,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done ||
                           snapshot.hasData) {
+                        List<Listing> filteredListings = snapshot.data!;
+                        if (selectedDate != null) {
+                          filteredListings = filteredListings.where((listing) {
+                            DateTime listingDate =
+                                DateTime.parse(listing.createdAt.toString());
+                            return listingDate.year == selectedDate!.year &&
+                                listingDate.month == selectedDate!.month &&
+                                listingDate.day == selectedDate!.day;
+                          }).toList();
+                        }
                         return RefreshIndicator(
                           onRefresh: () => refreshListings(),
                           child: ListView.builder(
-                            itemCount: snapshot.data?.length,
+                            itemCount: filteredListings.length,
                             itemBuilder: (context, index) {
                               return Dismissible(
-                                key: Key(snapshot.data![index].id!),
+                                key: Key(filteredListings[index].id!),
                                 confirmDismiss: (direction) async {
                                   if (direction ==
                                       DismissDirection.endToStart) {
                                     await deleteListing(
-                                        snapshot.data![index].id!);
+                                        filteredListings[index].id!);
                                     refreshListings();
                                     return true;
                                   } else if (direction ==
                                       DismissDirection.startToEnd) {
                                     context.push('/updatelisting',
-                                        extra: snapshot.data![index]);
+                                        extra: filteredListings[index]);
                                     return false;
                                   }
                                   return false;
@@ -101,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 child: GestureDetector(
                                   onTap: () => context.push('/listings',
-                                      extra: snapshot.data![index]),
+                                      extra: filteredListings[index]),
                                   child: Card(
                                     elevation: 0,
                                     child: Column(
@@ -114,14 +149,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                           leading: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(8.0),
-                                            child: snapshot.data![index].image
+                                            child: filteredListings[index]
+                                                    .image
                                                     .isNotEmpty
                                                 ? FadeInImage(
+                                                    key: ValueKey(
+                                                        filteredListings[index]
+                                                            .image),
                                                     placeholder:
                                                         const AssetImage(
                                                             "assets/food.png"),
-                                                    image: NetworkImage(snapshot
-                                                        .data![index].image),
+                                                    image: NetworkImage(
+                                                        filteredListings[index]
+                                                            .image),
                                                     fit: BoxFit.cover,
                                                     width: 80.0,
                                                     height: double.infinity,
@@ -134,10 +174,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     ),
                                                   ),
                                           ),
-                                          title:
-                                              Text(snapshot.data![index].title),
-                                          subtitle: Text(snapshot
-                                              .data![index].description),
+                                          title: Text(
+                                              filteredListings[index].title),
+                                          subtitle: Text(filteredListings[index]
+                                              .description),
                                         ),
                                       ],
                                     ),
@@ -157,31 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
           : const Center(
               child: CircularProgressIndicator(),
             ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 1,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Add',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.forum_rounded),
-            label: 'Community',
-          )
-        ],
-        onTap: (index) {
-          if (index == 1) {
-            context.push('/addlisting');
-          }
-          if (index == 2) {
-            context.push('/community');
-          }
-        },
-      ),
+      bottomNavigationBar: const MyNavigation(selectedIndex: 0),
     );
   }
 }
