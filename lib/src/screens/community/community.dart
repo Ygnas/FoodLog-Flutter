@@ -63,130 +63,89 @@ class _CommunityScreenState extends State<CommunityScreen> {
                           child: ListView.builder(
                             itemCount: snapshot.data?.length,
                             itemBuilder: (context, index) {
-                              return Dismissible(
-                                key: Key(snapshot.data![index].id!),
-                                confirmDismiss: (direction) async {
-                                  if (direction ==
-                                      DismissDirection.endToStart) {
-                                    await deleteListing(
-                                        snapshot.data![index].id!);
-                                    refreshListings();
-                                    return true;
-                                  } else if (direction ==
-                                      DismissDirection.startToEnd) {
-                                    context.push('/updatelisting',
-                                        extra: snapshot.data![index]);
-                                    return false;
-                                  }
-                                  return false;
-                                },
-                                background: Container(
-                                  color: Colors.green,
-                                  padding: const EdgeInsets.only(left: 16.0),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                              return GestureDetector(
+                                onTap: () => context.push('/listings',
+                                    extra: snapshot.data![index]),
+                                child: Card(
+                                  elevation: 0,
+                                  child: Column(
                                     children: [
-                                      Icon(Icons.edit, color: Colors.white),
-                                    ],
-                                  ),
-                                ),
-                                secondaryBackground: Container(
-                                  color: Colors.red,
-                                  padding: const EdgeInsets.only(right: 16.0),
-                                  child: const Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(Icons.delete, color: Colors.white),
-                                    ],
-                                  ),
-                                ),
-                                child: GestureDetector(
-                                  onTap: () => context.push('/listings',
-                                      extra: snapshot.data![index]),
-                                  child: Card(
-                                    elevation: 0,
-                                    child: Column(
-                                      children: [
-                                        ListTile(
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 8.0,
-                                                  vertical: 8.0),
-                                          leading: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            child: snapshot.data![index].image
-                                                    .isNotEmpty
-                                                ? FadeInImage(
-                                                    placeholder:
-                                                        const AssetImage(
-                                                            "assets/food.png"),
-                                                    image: NetworkImage(snapshot
-                                                        .data![index].image),
-                                                    fit: BoxFit.cover,
-                                                    width: 80.0,
-                                                    height: double.infinity,
-                                                  )
-                                                : const SizedBox(
-                                                    width: 80,
-                                                    child: Icon(
-                                                      Icons.image,
-                                                      size: 40.0,
-                                                    ),
+                                      ListTile(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 8.0),
+                                        leading: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          child: snapshot
+                                                  .data![index].image.isNotEmpty
+                                              ? FadeInImage(
+                                                  placeholder: const AssetImage(
+                                                      "assets/food.png"),
+                                                  image: NetworkImage(snapshot
+                                                      .data![index].image),
+                                                  fit: BoxFit.cover,
+                                                  width: 80.0,
+                                                  height: double.infinity,
+                                                )
+                                              : const SizedBox(
+                                                  width: 80,
+                                                  child: Icon(
+                                                    Icons.image,
+                                                    size: 40.0,
                                                   ),
-                                          ),
-                                          title:
-                                              Text(snapshot.data![index].title),
-                                          subtitle: Text(snapshot
-                                              .data![index].description),
+                                                ),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              LikeComment(
-                                                data: snapshot
-                                                    .data![index].likes.length,
-                                                dataName: '',
-                                                icon: Icons
-                                                    .thumb_up_off_alt_outlined,
-                                                onTap: () async {
-                                                  setState(() {
-                                                    snapshot.data![index].likes
-                                                            .contains(
-                                                                userProvider
-                                                                    .user.email)
-                                                        ? snapshot
-                                                            .data![index].likes
-                                                            .remove(userProvider
-                                                                .user.email)
-                                                        : snapshot
-                                                            .data![index].likes
-                                                            .add(userProvider
-                                                                .user.email);
-                                                  });
+                                        title:
+                                            Text(snapshot.data![index].title),
+                                        subtitle: Text(
+                                            snapshot.data![index].description),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            LikeComment(
+                                              data: snapshot
+                                                  .data![index].likes.length,
+                                              dataName: '',
+                                              icon: Icons
+                                                  .thumb_up_off_alt_outlined,
+                                              onTap: () async {
+                                                setState(() {
+                                                  snapshot.data![index].likes
+                                                          .contains(userProvider
+                                                              .user.email)
+                                                      ? snapshot
+                                                          .data![index].likes
+                                                          .remove(userProvider
+                                                              .user.email)
+                                                      : snapshot
+                                                          .data![index].likes
+                                                          .add(userProvider
+                                                              .user.email);
+                                                });
 
-                                                  await likeListing(
-                                                      snapshot.data![index].id!,
-                                                      snapshot
-                                                          .data![index].email!);
-                                                },
-                                              ),
-                                              const SizedBox(width: 16.0),
-                                              LikeComment(
-                                                  data: snapshot.data![index]
-                                                      .comments.length,
-                                                  dataName: 'comments',
-                                                  icon: Icons
-                                                      .mode_comment_outlined),
-                                            ],
-                                          ),
+                                                await likeListing(
+                                                    snapshot.data![index].id!,
+                                                    snapshot
+                                                        .data![index].email!);
+                                              },
+                                            ),
+                                            const SizedBox(width: 16.0),
+                                            LikeComment(
+                                                data: snapshot.data![index]
+                                                    .comments.length,
+                                                dataName: 'comments',
+                                                icon: Icons
+                                                    .mode_comment_outlined),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );

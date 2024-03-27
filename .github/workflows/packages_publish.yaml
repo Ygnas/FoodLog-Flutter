@@ -1,0 +1,32 @@
+name: Flutter Upload APK
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build_and_upload:
+    name: Build and Upload APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.x"
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk
+
+      - name: Upload APK to GitHub Packages
+        uses: github/packages-publish-action@v1
+        with:
+          repository_name: ${{ github.repository }}
+          package_name: FoodLog
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: build/app/outputs/flutter-apk/app-release.apk

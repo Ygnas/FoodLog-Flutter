@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:food_log/src/models/listing.dart';
 import 'package:food_log/src/providers/listing_provider.dart';
 import 'package:food_log/src/providers/user_provider.dart';
@@ -19,6 +20,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime? selectedDate;
   Future<List<Listing>>? listings;
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top]);
+  }
 
   @override
   Widget build(BuildContext context) {
