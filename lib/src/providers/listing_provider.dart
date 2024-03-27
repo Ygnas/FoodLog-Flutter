@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 
 class ListingProvider extends ChangeNotifier {
   late List<Listing> listings;
+  late List<Listing> allListings;
 
   ListingProvider() {
     listings = [];
@@ -21,9 +22,9 @@ class ListingProvider extends ChangeNotifier {
   }
 
   Future<List<Listing>> loadAllListings() async {
-    listings = await getAllListings();
+    allListings = await getAllListings();
     notifyListeners();
-    return listings;
+    return allListings;
   }
 
   Future<http.Response> likeListing(String id, String email) async {
