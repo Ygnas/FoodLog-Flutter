@@ -29,4 +29,3 @@ jobs:
           files: |
             build/app/outputs/flutter-apk/app-release.apk
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: ${{ github.event.release.tag_name }}
