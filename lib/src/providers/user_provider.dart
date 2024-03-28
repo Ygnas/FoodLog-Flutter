@@ -41,6 +41,8 @@ class UserProvider extends ChangeNotifier {
     const storage = FlutterSecureStorage();
     user = User();
     await storage.delete(key: "jwtToken");
+    await storage.delete(key: "name");
+    await storage.delete(key: "email");
     await deleteToken();
     notifyListeners();
   }
