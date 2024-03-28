@@ -86,7 +86,7 @@ class LoginForm extends StatelessWidget {
                                       .login(email, password)
                                       .then((response) {
                                     response.statusCode == 200
-                                        ? context.go("/")
+                                        ? context.go('/', extra: true)
                                         : ScaffoldMessenger.of(context)
                                             .showSnackBar(const SnackBar(
                                                 content: Text(
