@@ -22,14 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<List<Listing>>? listings;
 
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.top]);
-  }
 
-  @override
-  Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
     final listingProvider = context.read<ListingProvider>();
 
