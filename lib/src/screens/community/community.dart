@@ -64,8 +64,13 @@ class _CommunityScreenState extends State<CommunityScreen> {
                             itemCount: snapshot.data?.length,
                             itemBuilder: (context, index) {
                               return GestureDetector(
-                                onTap: () => context.push('/listings',
-                                    extra: snapshot.data![index]),
+                                onTap: () async {
+                                  final result = await context.push('/listings',
+                                      extra: snapshot.data![index]);
+                                  if (result == null) {
+                                    refreshListings();
+                                  }
+                                },
                                 child: Card(
                                   elevation: 0,
                                   child: Column(

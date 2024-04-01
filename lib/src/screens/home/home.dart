@@ -22,14 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<List<Listing>>? listings;
 
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.top]);
-  }
 
-  @override
-  Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
     final listingProvider = context.read<ListingProvider>();
 
@@ -202,8 +198,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             )
-          : const Center(
-              child: CircularProgressIndicator(),
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.push('/login');
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Text(
+                        'Please Login',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
       bottomNavigationBar: const MyNavigation(selectedIndex: 0),
     );
